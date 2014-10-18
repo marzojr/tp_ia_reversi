@@ -1,0 +1,69 @@
+Trabalho prático Reversi
+- MinMax com alpha beta
+	Decisão sobre avaliar um nó:
+		Minimum Depth
+		Maximum Depth
+		Heuristic eval
+			Uses MLP (?) to weigh the different heuristics
+		Time elapsed	
+			Experimentally verify the ratio between forward and backpropagation time
+				Run many experiments, and establish a confidence interval
+			Check how much time it takes to check the time every time a new state is expanded
+				Compute by comparing total time for a fixed depth with and without verifier
+		Compute parameters through experimentation
+			Other programs found on the net
+			Tulios wining program from last semester
+			Itself, with more time
+	Keep track of alpha beta
+	Recursive implementation (if we want)
+		Each recursion stores the best move from its children, and then returns it, allong with the evaluation function (standard alpha/beta)
+- Initial plays
+	Lookup table
+		Optional: Add our own entries by precomputing large depths
+		Binary file (if there are many)
+		Hash input
+			Board size
+			Purely string
+			If everything is computed up to a given depth, just use an array (maybe)	
+- Kernel/representação
+	structure
+		char array[8][8],
+	Enum class com char {-1 : black, 0 : empty, 1 : white }
+	Print configuration
+	load from string
+	load from file
+	expand
+		Generates children for the player that currently has the go
+		Returns tuples of movement, board	
+- Heuristics and meta-heuristics
+	Weights/Parameters
+	Heuristics:
+		Weights for each position
+			Multiple boards
+				Multiplex between them with metaheuristic, maybe
+		Number of pieces on the board, by gameplay time
+		Number of unflippable pieces
+			Extra weight for corners
+		Relative frontier size
+		Number of pieces each player has
+			Very important at end game
+			Not so important at start	
+		Check interwebs
+		Check tulio
+	Metaheuristics	
+		MLP
+			May be costly
+		Perceptron
+			Simple
+		Agebraic
+			Easily implement piece count x game time importance
+		Check web for ways to weigh heuristics
+			With NN
+			With models
+			etc
+	Experimental parametrization
+		As discussed above
+- Interfaces com o mundo
+	- Jogar humano/ia
+	- Interface com competição
+	- Makefile, main 
