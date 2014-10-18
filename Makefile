@@ -23,7 +23,7 @@ DISTFILE := tp_ia_reversi
 
 # Documentação
 SRCDOCS := $(wildcard *.odt)
-EXTRADIST := 
+EXTRADIST := compila.sh launch.sh othello.sh
 DOCS := $(SRCDOCS:%.odt=%.pdf)
 
 # Variáveis para compilação
@@ -44,7 +44,7 @@ time: $(BIN)
 
 zip: docs
 	rm -f $(DISTFILE).zip
-	$(ZIP) -9 $(DISTFILE).zip Makefile $(SRCSCXX) $(SRCSH) $(DOCS) $(EXTRADIST) $(TESTFILES)
+	$(ZIP) -9 $(DISTFILE).zip Makefile $(SRCSCXX) $(SRCSH) $(DOCS) $(EXTRADIST)
 
 clean:
 	rm -f $(DIRS)/*.o *~ $(DIRS)/*~ $(DIRS)/*.d $(BIN) *.zip *.tar.gz
