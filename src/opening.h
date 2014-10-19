@@ -4,7 +4,7 @@
 #include "reversi.h"
 
 namespace reversi{
-	void getOpening(State_t * state, Movement_t * movement);
+	bool getOpening(State_t * state, Movement_t * movement);
 }
 
 #endif //_OPENING_H_

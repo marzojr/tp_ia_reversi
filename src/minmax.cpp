@@ -1,6 +1,7 @@
 #include <algorithm>
 #include "minmax.h"
 #include "heuristic.h"
+#include "opening.h"
 
 #ifndef INFINITY
 #include <limits>
@@ -102,7 +103,7 @@ namespace minmax{
 	}
 
 	void computeMinmax(reversi::State_t * base, reversi::Movement_t * movement, reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor){
-		movement->x = movement->y = -1;	// "No movement"
+		if (reversi::getOpening(base, movement)) return;
 		Heuristic_t heuristic;
 		computeMax(base, &heuristic, maxDepth, -INFINITY, INFINITY, movement, myColor, oppColor);
 	}

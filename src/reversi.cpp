@@ -66,6 +66,56 @@ namespace reversi{
 		return ss.str();
 	}
 
+	std::string State_t::toString(bool flipMain, bool flipRev) const{
+		std::stringstream ss;
+		if (flipMain && flipRev){
+			// Flipped along both diagonals (180 degree rotation)
+			for (size_t i = 0; i < 8; i++){
+				for (size_t j = 0; j < 8; j++){
+					switch (board[7 - i][7 - j]){
+					case Occupancy_t::BLACK: ss << 'B'; break;
+					case Occupancy_t::WHITE: ss << 'W'; break;
+					case Occupancy_t::EMPTY: ss << '.'; break;
+					}
+				}
+			}
+		} else if (flipMain){
+			// Flipped along main diagonal.
+			for (size_t i = 0; i < 8; i++){
+				for (size_t j = 0; j < 8; j++){
+					switch (board[j][i]){
+					case Occupancy_t::BLACK: ss << 'B'; break;
+					case Occupancy_t::WHITE: ss << 'W'; break;
+					case Occupancy_t::EMPTY: ss << '.'; break;
+					}
+				}
+			}
+		} else if(flipRev){
+			// Flipped along reverse diagonal
+			for (size_t i = 0; i < 8; i++){
+				for (size_t j = 0; j < 8; j++){
+					switch (board[7 - j][7 - i]){
+					case Occupancy_t::BLACK: ss << 'B'; break;
+					case Occupancy_t::WHITE: ss << 'W'; break;
+					case Occupancy_t::EMPTY: ss << '.'; break;
+					}
+				}
+			}
+		} else {
+			// Unflipped. Different from toString to reduce length.
+			for (size_t i = 0; i < 8; i++){
+				for (size_t j = 0; j < 8; j++){
+					switch (board[i][j]){
+					case Occupancy_t::BLACK: ss << 'B'; break;
+					case Occupancy_t::WHITE: ss << 'W'; break;
+					case Occupancy_t::EMPTY: ss << '.'; break;
+					}
+				}
+			}
+		}
+		return ss.str();
+	}
+
 	void State_t::expand(std::vector<Movement_t> & actions, Occupancy_t myColor, Occupancy_t oppColor) const{
 
 	}
