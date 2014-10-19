@@ -7,7 +7,7 @@
 #include "minmax.h"
 
 
-void printFormatAndExit(char * program){
+void printFormatAndExit(const char * program){
 	printf("(1) %s -f [fileName] [\"white\" | \"black\"] \n", program);
 	printf("(2) %s -s [board string] [\"white\" | \"black\"]\n", program);
 	exit(0);
@@ -16,20 +16,21 @@ void printFormatAndExit(char * program){
 int main(int argc, char ** argv){
 
 	// Sanitize inputs and generate initial state
-	int expectedArgs = 1;
+	int expectedArgs = 0;
+	const char * argProgram = argv[expectedArgs++];
 	const char * argReadType = argv[expectedArgs++];
 	const char * argReadData = argv[expectedArgs++];
 	const char * argColor = argv[expectedArgs++];
-	if (argc == 1) printFormatAndExit(argv[0]);
+	if (argc == 1) printFormatAndExit(argProgram);
 	else if (argc != expectedArgs){
 		fprintf(stderr, "ERROR: Expected %i arguments, got %i!\n", expectedArgs, argc-1);
-		printFormatAndExit(argv[0]);
+		printFormatAndExit(argProgram);
 	}
 	//       Read play color
 	reversi::Occupancy_t myColor, oppColor;
 	if (strlen(argColor) != 5){
 		fprintf(stderr, "ERROR: Expected play color \"white\" or \"black\", instead got \"%s\"!\n", argColor);
-		printFormatAndExit(argv[0]);
+		printFormatAndExit(argProgram);
 	} else{
 		char argColorUpper[6];
 		for (size_t i = 0; i < 6; i++) argColorUpper[i] = toupper(argColor[i]);
@@ -41,7 +42,7 @@ int main(int argc, char ** argv){
 			oppColor = reversi::Occupancy_t::WHITE;
 		} else{
 			fprintf(stderr, "ERROR: Expected a color \"white\" or \"black\", instead got \"%s\"", argColor);
-			printFormatAndExit(argv[0]);
+			printFormatAndExit(argProgram);
 		}
 	}
 	//       Read input type
@@ -50,7 +51,7 @@ int main(int argc, char ** argv){
 	else if (strcmp(argReadType, "-s") == 0) readType = FROM_STRING;
 	else{
 		fprintf(stderr, "ERROR: Expected a read type of \"-f\" or \"-s\", instead got \"%s\"!\n", argReadType);
-		printFormatAndExit(argv[0]);
+		printFormatAndExit(argProgram);
 	}
 	//       Read input data and produce starting state
 	reversi::State_t * startingState = 0;
@@ -68,6 +69,15 @@ int main(int argc, char ** argv){
 	}
 
 	printf("%s\n", startingState->toString().c_str());
+
+	// [DEBUG] Print out the possible movements for each player given the board
+	/*std::vector<reversi::Movement_t> movementW, movementB;
+	startingState->expand(movementB, movementW);
+	printf("White movements:\n");
+	for (auto i = movementW.begin(), iend = movementW.end(); i != iend; i++) printf("%s\n", i->toString().c_str());
+	printf("Black movements:\n");
+	for (auto i = movementB.begin(), iend = movementB.end(); i != iend; i++) printf("%s\n", i->toString().c_str());
+	printf("~~\n");*/
 
 	// Compute the next state using min-max
 	reversi::Movement_t movement;
