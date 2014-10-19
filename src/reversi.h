@@ -2,11 +2,14 @@
 #define _REVERSI_H_
 
 #include <iosfwd>
+#include <string>
+#include <stdint.h>
+
 namespace reversi{
 	typedef uint8_t boardCoord_t;
 
 	enum class Occupancy_t : char {
-		BLACK, EMPTY, WHITE
+		BLACK = -1, EMPTY = 0, WHITE = 1
 	};	
 	
 	struct Movement_t{
@@ -17,6 +20,9 @@ namespace reversi{
 	class State_t{
 		Occupancy_t board[8][8];
 		State_t(const State_t * parent, const Movement_t * movement);
+	private:
+		void init(std::istream & conf);
+
 	public:
 		State_t(const char * conf);
 		State_t(std::istream & conf);
