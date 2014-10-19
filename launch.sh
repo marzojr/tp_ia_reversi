@@ -1,3 +1,3 @@
 #!/bin/sh
-./reversi m "$@"
+./reversi -f "$@" > move.txt
 

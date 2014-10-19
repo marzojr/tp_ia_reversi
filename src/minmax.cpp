@@ -2,6 +2,6 @@
 
 namespace minmax{
 	void computeMinmax(reversi::State_t * base, reversi::Movement_t * movement){
-		movement->x = movement->y = 0;
+		movement->x = movement->y = -1;	// "No movement"
 	}
 }

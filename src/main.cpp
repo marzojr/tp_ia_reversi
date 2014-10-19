@@ -7,37 +7,37 @@
 #include "minmax.h"
 
 
-void printFormatAndExit(void){
-	printf("(1) ./reversi [\"white\" | \"black\"] -f [fileName]\n");
-	printf("(2) ./reversi [\"white\" | \"black\"] -s [board string]\n");
+void printFormatAndExit(char * program){
+	printf("(1) %s -f [fileName] [\"white\" | \"black\"] \n", program);
+	printf("(2) %s -s [board string] [\"white\" | \"black\"]\n", program);
 	exit(0);
 }
+
 int main(int argc, char ** argv){
 
 	// Sanitize inputs and generate initial state
 	size_t expectedArgs = 1;
-	const char * argColor = argv[expectedArgs++];
 	const char * argReadType = argv[expectedArgs++];
 	const char * argReadData = argv[expectedArgs++];
-	if (argc == 1) printFormatAndExit();
+	const char * argColor = argv[expectedArgs++];
+	if (argc == 1) printFormatAndExit(argv[0]);
 	else if (argc > expectedArgs){
 		fprintf(stderr, "ERROR: Expected %i arguments, got %i!\n", expectedArgs);
-		printFormatAndExit();
+		printFormatAndExit(argv[0]);
 	}
 	//       Read play color
 	enum { WHITE_START, BLACK_START } startColor;
 	if (strlen(argColor) != 5){
 		fprintf(stderr, "ERROR: Expected play color \"white\" or \"black\", instead got \"%s\"!\n", argColor);
-		printFormatAndExit();
-	}
-	else{
+		printFormatAndExit(argv[0]);
+	} else{
 		char argColorUpper[6];
 		for (size_t i = 0; i < 6; i++) argColorUpper[i] = toupper(argColor[i]);
 		if (strcmp(argColorUpper, "WHITE")) startColor = WHITE_START;
 		else if (strcmp(argColorUpper, "BLACK")) startColor = BLACK_START;
 		else{
 			fprintf(stderr, "ERROR: Expected a color \"white\" or \"black\", instead got \"%s\"", argColor);
-			printFormatAndExit();
+			printFormatAndExit(argv[0]);
 		}
 	}
 	//       Read input type
@@ -46,10 +46,10 @@ int main(int argc, char ** argv){
 	else if (strcmp(argReadType, "-s") == 0) readType = FROM_STRING;
 	else{
 		fprintf(stderr, "ERROR: Expected a read type of \"-f\" or \"-s\", instead got \"%s\"!\n", argReadType);
-		printFormatAndExit();
+		printFormatAndExit(argv[0]);
 	}
 	//       Read input data and produce starting state
-	reversi::State_t * startingState;
+	reversi::State_t * startingState = 0;
 	if (readType == FROM_FILE){
 		std::ifstream input(argReadData, std::ifstream::in);
 		if (!input.is_open()){
@@ -73,6 +73,6 @@ int main(int argc, char ** argv){
 	printf("%s\n", movement.toString().c_str());
 	
 	// Free resources and exit
-	if (startingState) delete startingState;
+	delete startingState;
 	return 0;
 }

@@ -7,13 +7,14 @@ namespace reversi{
 	
 	std::string Movement_t::toString() const{
 		std::stringstream ss;
-		ss << x << ' ' << y;
+		ss << x << ',' << y;
 		return ss.str();
 	}
 	
 	State_t::State_t(const State_t * parent, const Movement_t * movement){
 
 	}
+
 	void State_t::init(std::istream & conf){
 		for (size_t i = 0; i < 8; i++){
 			for (size_t j = 0; j < 8; j++){
@@ -39,13 +40,16 @@ namespace reversi{
 		}
 
 	}
+
 	State_t::State_t(const char * conf){
 		std::istringstream ss(conf);
 		init(ss);
 	}
+
 	State_t::State_t(std::istream & conf){
 		init(conf);
 	}
+
 	std::string State_t::toString() const{
 		std::stringstream ss;
 		for (size_t i = 0; i < 8; i++){
@@ -61,6 +65,7 @@ namespace reversi{
 		}
 		return ss.str();
 	}
+
 	void State_t::expand(Movement_t * movement, State_t * state, size_t &count) const{
 
 	}
