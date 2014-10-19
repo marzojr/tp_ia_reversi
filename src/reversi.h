@@ -12,7 +12,8 @@ namespace reversi{
 
 	enum class Occupancy_t : char {
 		BLACK = -1, EMPTY = 0, WHITE = 1
-	};	
+	};
+	Occupancy_t oppositeColor(Occupancy_t color);
 	
 	struct Movement_t{
 		boardCoord_t x, y;
@@ -29,7 +30,8 @@ namespace reversi{
 		State_t(std::istream & conf);
 		State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color);
 		std::string toString() const;
-		void expand(std::vector<Movement_t> & actions, Occupancy_t myColor, Occupancy_t oppColor) const;
+		void expand(std::vector<Movement_t> & actionsB, std::vector<Movement_t> & actionsW) const ;
+		const Occupancy_t(*getBoard() const)[8][8];
 	};
 }
 
