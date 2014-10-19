@@ -6,7 +6,7 @@
 class Heuristic_t{
 
 public:
-	double eval(reversi::State_t * state);
+	double eval(const reversi::State_t * state, reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor);
 };
 
 #endif //_HEURISTIC_H_

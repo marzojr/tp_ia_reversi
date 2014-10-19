@@ -3,10 +3,12 @@
 
 #include <iosfwd>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
+#include <vector>
+#include <utility>
 
 namespace reversi{
-	typedef uint8_t boardCoord_t;
+	typedef int8_t boardCoord_t;
 
 	enum class Occupancy_t : char {
 		BLACK = -1, EMPTY = 0, WHITE = 1
@@ -19,15 +21,15 @@ namespace reversi{
 
 	class State_t{
 		Occupancy_t board[8][8];
-		State_t(const State_t * parent, const Movement_t * movement);
 	private:
 		void init(std::istream & conf);
 
 	public:
 		State_t(const char * conf);
 		State_t(std::istream & conf);
+		State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color);
 		std::string toString() const;
-		void expand(Movement_t * movement, State_t * state, size_t &count) const;
+		void expand(std::vector<Movement_t> & actions, Occupancy_t myColor, Occupancy_t oppColor) const;
 	};
 }
 

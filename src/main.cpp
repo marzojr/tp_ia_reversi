@@ -16,26 +16,30 @@ void printFormatAndExit(char * program){
 int main(int argc, char ** argv){
 
 	// Sanitize inputs and generate initial state
-	size_t expectedArgs = 1;
+	int expectedArgs = 1;
 	const char * argReadType = argv[expectedArgs++];
 	const char * argReadData = argv[expectedArgs++];
 	const char * argColor = argv[expectedArgs++];
 	if (argc == 1) printFormatAndExit(argv[0]);
-	else if (argc > expectedArgs){
-		fprintf(stderr, "ERROR: Expected %i arguments, got %i!\n", expectedArgs);
+	else if (argc != expectedArgs){
+		fprintf(stderr, "ERROR: Expected %i arguments, got %i!\n", expectedArgs, argc-1);
 		printFormatAndExit(argv[0]);
 	}
 	//       Read play color
-	enum { WHITE_START, BLACK_START } startColor;
+	reversi::Occupancy_t myColor, oppColor;
 	if (strlen(argColor) != 5){
 		fprintf(stderr, "ERROR: Expected play color \"white\" or \"black\", instead got \"%s\"!\n", argColor);
 		printFormatAndExit(argv[0]);
 	} else{
 		char argColorUpper[6];
 		for (size_t i = 0; i < 6; i++) argColorUpper[i] = toupper(argColor[i]);
-		if (strcmp(argColorUpper, "WHITE")) startColor = WHITE_START;
-		else if (strcmp(argColorUpper, "BLACK")) startColor = BLACK_START;
-		else{
+		if (strcmp(argColorUpper, "WHITE")){
+			myColor  = reversi::Occupancy_t::WHITE;
+			oppColor = reversi::Occupancy_t::BLACK;
+		} else if (strcmp(argColorUpper, "BLACK")){
+			myColor  = reversi::Occupancy_t::BLACK;
+			oppColor = reversi::Occupancy_t::WHITE;
+		} else{
 			fprintf(stderr, "ERROR: Expected a color \"white\" or \"black\", instead got \"%s\"", argColor);
 			printFormatAndExit(argv[0]);
 		}
@@ -67,7 +71,7 @@ int main(int argc, char ** argv){
 
 	// Compute the next state using min-max
 	reversi::Movement_t movement;
-	minmax::computeMinmax(startingState, &movement);
+	minmax::computeMinmax(startingState, &movement, myColor, oppColor);
 
 	// Prints out the movement to the screen (launch.sh will redirect it to move.txt)
 	printf("%s\n", movement.toString().c_str());

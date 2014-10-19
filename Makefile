@@ -13,11 +13,11 @@ ODT2PDF = unoconv
 DIRS=src
 
 # Arquivos fonte
-SRCSCXX := $(wildcard $(DIRS)/*.cc)
+SRCSCXX := $(wildcard $(DIRS)/*.cpp)
 SRCSH := $(wildcard $(DIRS)/*.h)
 
 # Arquivos de objeto
-OBJECTS := $(SRCSCXX:%.cc=%.o)
+OBJECTS := $(SRCSCXX:%.cpp=%.o)
 BIN := reversi
 DISTFILE := tp_ia_reversi
 
@@ -27,7 +27,7 @@ EXTRADIST := compila.sh launch.sh othello.sh
 DOCS := $(SRCDOCS:%.odt=%.pdf)
 
 # Variáveis para compilação
-CXXFLAGS = -O3 -s -Wall -Wextra -pedantic -MMD
+CXXFLAGS = -O3 -s -std=c++11 -Wall -Wextra -pedantic -MMD
 CPPFLAGS = 
 INCFLAGS = 
 LDFLAGS = -Wl,-rpath,/usr/local/lib

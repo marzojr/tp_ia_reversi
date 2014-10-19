@@ -11,13 +11,13 @@ namespace reversi{
 		return ss.str();
 	}
 	
-	State_t::State_t(const State_t * parent, const Movement_t * movement){
+	State_t::State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color){
 
 	}
 
 	void State_t::init(std::istream & conf){
-		for (size_t i = 0; i < 8; i++){
-			for (size_t j = 0; j < 8; j++){
+		for (unsigned i = 0; i < 8; i++){
+			for (unsigned j = 0; j < 8; j++){
 				
 				// Load next character from stream
 				if (conf.eof()){
@@ -66,7 +66,7 @@ namespace reversi{
 		return ss.str();
 	}
 
-	void State_t::expand(Movement_t * movement, State_t * state, size_t &count) const{
+	void State_t::expand(std::vector<Movement_t> & actions, Occupancy_t myColor, Occupancy_t oppColor) const{
 
 	}
 }
