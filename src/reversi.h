@@ -11,11 +11,10 @@ namespace reversi{
 	typedef int8_t boardCoord_t;
 
 	enum class Occupancy_t : char {
-		BLACK = -1, EMPTY = 0, WHITE = 1
+		BLACK = 2, EMPTY = 0, WHITE = 1
 	};
-	inline Occupancy_t oppositeColor(Occupancy_t color){
-		return static_cast<Occupancy_t>(-static_cast<char>(color));
-	}
+
+	inline Occupancy_t oppositeColor(Occupancy_t color);
 
 	struct Movement_t{
 		boardCoord_t x, y;
@@ -42,7 +41,7 @@ namespace reversi{
 		State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color);
 		std::string toString() const;
 		std::string toString(bool flipMain, bool flipRev) const;
-		void expand(std::vector<Movement_t> & actionsB, std::vector<Movement_t> & actionsW) const ;
+		void expand(Movement_t * actionsB, size_t &actionsBCnt, Movement_t * actionsW, size_t &actionsWCnt) const;
 		const Occupancy_t(*getBoard() const)[8][8];
 	};
 }

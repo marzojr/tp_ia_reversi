@@ -3,8 +3,8 @@
 
 double Heuristic_t::eval(
 	const reversi::State_t * state,
-	const std::vector<reversi::Movement_t> & actionsB,
-	const std::vector<reversi::Movement_t> & actionsW, 
+	const reversi::Movement_t * actionsB, size_t actionsBCnt,
+	const reversi::Movement_t * actionsW, size_t actionsWCnt,
 	reversi::Occupancy_t color
 ){
 	// Makes an alias for the board being worked on
@@ -116,8 +116,8 @@ double Heuristic_t::eval(
 	}
 
 	// 3) Relative Frontier sizes
-	size_t frontierSizeW = actionsW.size();
-	size_t frontierSizeB = actionsB.size();
+	size_t frontierSizeW = actionsWCnt;
+	size_t frontierSizeB = actionsBCnt;
 	double hFrontierSize;
 	if (frontierSizeW + frontierSizeB == 0) hFrontierSize = 0.0;
 	else hFrontierSize = ((double)frontierSizeW - (double)frontierSizeB) / (frontierSizeW + frontierSizeB);

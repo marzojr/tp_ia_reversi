@@ -6,6 +6,7 @@
 #include "reversi.h"
 #include "minmax.h"
 
+// extern void generateExpandTables(void);
 
 void printFormatAndExit(const char * program){
 	printf("(1) %s -f [fileName] [\"white\" | \"black\"] \n", program);
@@ -67,6 +68,9 @@ int main(int argc, char ** argv){
 	} else{
 		startingState = new reversi::State_t(argReadData);
 	}
+
+	// [CODE_GEN]
+	//generateExpandTables();
 
 	// [DEBUG] Print out the board
 	//printf("%s\n", startingState->toString().c_str());

@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <assert.h>
 #include "reversi.h"
 
 namespace reversi{
@@ -9,6 +10,13 @@ namespace reversi{
 		std::stringstream ss;
 		ss << static_cast<int>(x) << ',' << static_cast<int>(y);
 		return ss.str();
+	}
+
+	inline Occupancy_t oppositeColor(Occupancy_t color){
+		if (color == Occupancy_t::BLACK) return Occupancy_t::WHITE;
+		else if (color == Occupancy_t::WHITE) return Occupancy_t::BLACK;
+		else return Occupancy_t::EMPTY;
+		//return static_cast<Occupancy_t>(-static_cast<char>(color));
 	}
 	
 	State_t::State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color){
@@ -150,10 +158,79 @@ namespace reversi{
 	}
 
 	// Expand computes all moves that can be done on the current board, through 8 passes
-	void State_t::expand(std::vector<Movement_t> & actionsB, std::vector<Movement_t> & actionsW) const{
+	void State_t::expand(Movement_t * actionsB, size_t &actionsBCnt, Movement_t * actionsW, size_t &actionsWCnt) const{
+	
+		// Loads in the hard-coded placement matrices
+		/* Defines expandAttributes -- {x_0, x_1, inc_x, inc_y, size, trinary_representation}
+		 *     and expandPlacement3 ... expandPlacement8 -- A matrix that, for a given trinary representation, 
+		 *           represents {W, W, W, B, B, B}, where W or B are a position that can have that color in it, 
+		 *           and a value of -1 should be ignored */
+		const uint8_t(*b)[8] = (uint8_t(*)[8]) board;
+		#include "expand.def"
+		const static int(*expandPlacement[9])[6] = {
+			NULL, NULL, NULL, expandPlacement3, expandPlacement4, expandPlacement5, expandPlacement6, expandPlacement7, expandPlacement8
+		};
+
+		// Stores which positions can be of each color
+		uint8_t possibleW[8][8];
+		uint8_t possibleB[8][8];
+		memset(possibleW, 0x00, 8 * 8 * sizeof(bool));
+		memset(possibleB, 0x00, 8 * 8 * sizeof(bool));
+
+		// Determine placement positions
+		for (size_t i = 0; i < 38; i++){
+			const int x0 = expandAttributes[i][0];
+			const int y0 = expandAttributes[i][1];
+			const int incx = expandAttributes[i][2];
+			const int incy = expandAttributes[i][3];
+			const int segmentSize = expandAttributes[i][4];
+			const int segmentTrinary = expandAttributes[i][5];
+			const int (&values)[6] = expandPlacement[segmentSize][segmentTrinary];
+			if (values[0] != -1){
+				assert(y0 + incy*values[0] < 8 && x0 + incx*values[0] < 8);
+				possibleW[y0 + incy*values[0]][x0 + incx*values[0]] = true;
+				if (values[1] != -1){
+					assert(y0 + incy*values[1] < 8 && x0 + incx*values[1] < 8);
+					possibleW[y0 + incy*values[1]][x0 + incx*values[1]] = true;
+					if (values[2] != -1){
+						assert(y0 + incy*values[2] < 8 && x0 + incx*values[2] < 8);
+						possibleW[y0 + incy*values[2]][x0 + incx*values[2]] = true;
+					}
+				}
+			}
+			if (values[3] != -1){
+				assert(y0 + incy*values[3] < 8 && x0 + incx*values[3] < 8);
+				possibleB[y0 + incy*values[3]][x0 + incx*values[3]] = true;
+				if (values[4] != -1){
+					assert(y0 + incy*values[4] < 8 && x0 + incx*values[4] < 8);
+					possibleB[y0 + incy*values[4]][x0 + incx*values[4]] = true;
+					if (values[5] != -1){
+						assert(y0 + incy*values[5] < 8 && x0 + incx*values[5] < 8);
+						possibleB[y0 + incy*values[5]][x0 + incx*values[5]] = true;
+					}
+				}
+			}
+		}
+
+		actionsWCnt = 0;
+		for (size_t y = 0; y < 8; y++){
+			for (size_t x = 0; x < 8; x++){
+				if (possibleW[y][x]){
+					actionsW[actionsWCnt].y = y;
+					actionsW[actionsWCnt].x = x;
+					actionsWCnt++;
+		}}}
+		actionsBCnt = 0;
+		for (size_t y = 0; y < 8; y++){
+			for (size_t x = 0; x < 8; x++){
+				if (possibleB[y][x]){
+					actionsB[actionsBCnt].y = y;
+					actionsB[actionsBCnt].x = x;
+					actionsBCnt++;
+		}}}
 
 		// We define the starting x and y, as well as the increment for every row/column/diagonal in each direction
-		static const int startX[8][16] = {
+		/*static const int startX[8][16] = {
 			{ 0, 0, 0, 0, 0, 0, 0, 0, -1}, // E (>) 
 			{ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, -1}, // SE 
 			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // S (V)
@@ -199,7 +276,7 @@ namespace reversi{
 				 * 1) If the current cell is empty, store its address
 				 * 2) Store the opposite color to that of the previous cell; Initially set to empty
 				 * 3) If the color of the current cell is the same as the previous, and neither is empty, the last empty cell can be this color
-				 */
+				 * /
 				uint8_t * lastEmpty = NULL;
 				Occupancy_t placeColor = Occupancy_t::EMPTY;
 				do{
@@ -213,11 +290,11 @@ namespace reversi{
 					x += ix;
 					y += iy;
 				} while (0 <= x && x < 8 && 0 <= y && y < 8);				
-			}
+			}* /
 		}
 
 		// Pass over the possibleBloard and store the possible movements
-		Movement_t movement;
+		/*Movement_t movement;
 		for (size_t y = 0; y < 8; y++){
 			movement.y = y;
 			for (size_t x = 0; x < 8; x++){
@@ -225,7 +302,7 @@ namespace reversi{
 				if (possibleBoard[y][x] & possibleW) actionsW.push_back(movement);
 				if (possibleBoard[y][x] & possibleB) actionsB.push_back(movement);
 			}
-		}
+		}*/
 	}
 }
 

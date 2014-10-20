@@ -9,7 +9,7 @@
 #endif
 
 namespace minmax{
-	const int maxDepth = 6;	// For now
+	const int maxDepth = 10;	// For now
 	const int depthBound = -5;	// For now
 
 	template<bool max> static double computeMinmax(
@@ -19,33 +19,34 @@ namespace minmax{
 	{
 
 		// Expand the current state (neede by heuristic)
-		std::vector<reversi::Movement_t> actionsB, actionsW;
-		actionsB.reserve(64);
-		actionsW.reserve(64);
-		state->expand(actionsB, actionsW);
+		reversi::Movement_t actionsB[64];
+		reversi::Movement_t actionsW[64];
+		size_t actionsBCnt, actionsWCnt;
+		state->expand(actionsB, actionsBCnt, actionsW, actionsWCnt);
 
 		// If went through full depth, or if reached a leaf node, it is time to wrap up the search.
-		if (depth <= 0 || (actionsB.empty() && actionsW.empty())) {
-			double value = heuristic->eval(state, actionsB, actionsW, myColor);
+		if (depth <= 0 || (actionsB == 0 && actionsW == 0)) {
+			double value = heuristic->eval(state, actionsB, actionsBCnt, actionsW, actionsWCnt, myColor);
 			// TODO: extend search if heuristic value is exceptionally good
 			return value;
 		}
 
-
-		std::vector<reversi::Movement_t> & myActions = myColor == reversi::Occupancy_t::WHITE ? actionsW : actionsB;
-		reversi::Movement_t bestMovement{ -1, -1 };
+		// Make an alias for the actions of the current player
+		const reversi::Movement_t * myActions = myColor == reversi::Occupancy_t::WHITE ? actionsW : actionsB;
+		const size_t myActionsCnt = myColor == reversi::Occupancy_t::WHITE ? actionsWCnt : actionsBCnt;
+		size_t bestMovement = (size_t)-1;
 		reversi::Movement_t movementOpponent;
 
 		// If we have no moves, let the opponent move
-		if (myActions.empty()) {
+		if (myActionsCnt == 0) {
 			movement->x = movement->y = -1;	// "No movement"
 			return computeMinmax<!max>(state, heuristic, depth - 1, alpha, beta, &movementOpponent, oppColor, myColor);
 
 		// Otherwise, iterate over movements and choose the best one
-		} else for (auto it = myActions.begin(), itend = myActions.end(); it != itend; ++it){
+		} else for (size_t i = 0; i < myActionsCnt; i++){
 
 			// Apply the movement and evaluate it
-			const reversi::Movement_t & move = *it;
+			const reversi::Movement_t & move = myActions[i];
 			reversi::State_t child(state, &move, myColor);
 			double newValue = computeMinmax<!max>(&child, heuristic, depth - 1, alpha, beta, &movementOpponent, oppColor, myColor);
 				
@@ -53,20 +54,21 @@ namespace minmax{
 			if (max){
 				if (alpha < newValue){
 					alpha = newValue;
-					bestMovement = *it;
+					bestMovement = i;
 					if (beta <= alpha) break;
 				}
 			// If this is a min-node, keep the smallest value and use it as beta
 			} else{
 				if (beta > newValue){
 					beta = newValue;
-					bestMovement = *it;
+					bestMovement = i;
 					if (beta <= alpha) break;
 				}
 			}
 		}
 
-		*movement = bestMovement;
+		if (bestMovement == (size_t)-1) *movement = reversi::Movement_t{ -1, -1 };
+		else *movement = myActions[bestMovement];
 		return max ? alpha : beta;
 	}
 	

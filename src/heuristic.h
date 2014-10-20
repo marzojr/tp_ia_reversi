@@ -7,9 +7,9 @@ class Heuristic_t{
 
 public:
 	double eval(
-		const reversi::State_t * state, 
-		const std::vector<reversi::Movement_t> & actionsB, 
-		const std::vector<reversi::Movement_t> & actionsW, 
+		const reversi::State_t * state,
+		const reversi::Movement_t * actionsB, size_t actionsBCnt,
+		const reversi::Movement_t * actionsW, size_t actionsWCnt,
 		reversi::Occupancy_t color
 	);
 };
