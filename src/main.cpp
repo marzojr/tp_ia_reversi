@@ -47,8 +47,8 @@ int main(int argc, char ** argv){
 	}
 	//       Read input type
 	enum { FROM_FILE, FROM_STRING} readType;
-	if (strcmp(argReadType, "-f") == 0) readType = FROM_FILE;
-	else if (strcmp(argReadType, "-s") == 0) readType = FROM_STRING;
+	if (!strcmp(argReadType, "-f") == 0) readType = FROM_FILE;
+	else if (!strcmp(argReadType, "-s") == 0) readType = FROM_STRING;
 	else{
 		fprintf(stderr, "ERROR: Expected a read type of \"-f\" or \"-s\", instead got \"%s\"!\n", argReadType);
 		printFormatAndExit(argProgram);

@@ -13,7 +13,7 @@ namespace reversi{
 	enum class Occupancy_t : char {
 		BLACK = -1, EMPTY = 0, WHITE = 1
 	};
-	Occupancy_t oppositeColor(Occupancy_t color);
+	constexpr Occupancy_t oppositeColor(Occupancy_t color);
 	
 	struct Movement_t{
 		boardCoord_t x, y;

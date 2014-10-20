@@ -19,27 +19,31 @@ namespace minmax{
 	static double computeMax(const reversi::State_t * state, Heuristic_t * heuristic,
 	                         int depth, double alpha, double beta, reversi::Movement_t * movement,
 	                         reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor){
-		// TODO: detect leaf node (states where neither player can move)
-		if (depth <= 0) {
-			double value = heuristic->eval(state, myColor, oppColor);
+		std::vector<reversi::Movement_t> actionsB, actionsW;
+		actionsB.reserve(64);
+		actionsW.reserve(64);
+		state->expand(actionsB, actionsW);
+
+		// If went through full depth, or if reached a leaf node, it is time to
+		// wrap up the search.
+		if (depth <= 0 || (actionsB.empty() && actionsW.empty())) {
+			double value = heuristic->eval(state, actionsB, actionsW, myColor);
 			// TODO: extend search if heuristic value is too good
 			return value;
 		}
 
-		double bestValue = -INFINITY;
+		std::vector<reversi::Movement_t> & myActions  = myColor == reversi::Occupancy_t::WHITE ? actionsW : actionsB;
+		double bestValue = INFINITY;
 		reversi::Movement_t bestMovement{-1, -1};
-		std::vector<reversi::Movement_t> actions;
-		actions.reserve(64);
-		state->expand(actions, myColor, oppColor);
 		reversi::Movement_t minMovement;
-
-		if (actions.empty()) {
-			// Special case: we can't make any movements! Let minplayer do its
-			// thing.
+		if (myActions.empty()) {
+			// Special case: we can't make any movements! Let maxplayer do its
+			// thing: we already know that he has movements because of the check
+			// above.
 			movement->x = movement->y = -1;	// "No movement"
 			return computeMin(state, heuristic, depth-1, alpha, beta, &minMovement, oppColor, myColor);
 		}
-		for (std::vector<reversi::Movement_t>::const_iterator it = actions.begin(); it != actions.end(); ++it) {
+		for (std::vector<reversi::Movement_t>::const_iterator it = myActions.begin(); it != myActions.end(); ++it) {
 			const reversi::Movement_t & move = *it;
 			reversi::State_t child(state, &move, myColor);
 			double newValue = computeMin(&child, heuristic, depth-1, alpha, beta, &minMovement, oppColor, myColor);
@@ -62,30 +66,34 @@ namespace minmax{
 	static double computeMin(const reversi::State_t * state, Heuristic_t * heuristic,
 	                         int depth, double alpha, double beta, reversi::Movement_t * movement,
 	                         reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor){
-		// TODO: detect leaf node (states where neither player can move)
-		if (depth <= 0) {
-			double value = heuristic->eval(state, myColor, oppColor);
+		std::vector<reversi::Movement_t> actionsB, actionsW;
+		actionsB.reserve(64);
+		actionsW.reserve(64);
+		state->expand(actionsB, actionsW);
+
+		// If went through full depth, or if reached a leaf node, it is time to
+		// wrap up the search.
+		if (depth <= 0 || (actionsB.empty() && actionsW.empty())) {
+			double value = heuristic->eval(state, actionsB, actionsW, myColor);
 			// TODO: extend search if heuristic value is too good
 			return value;
 		}
 
+		std::vector<reversi::Movement_t> & myActions  = myColor == reversi::Occupancy_t::WHITE ? actionsW : actionsB;
 		double bestValue = INFINITY;
 		reversi::Movement_t bestMovement{-1, -1};
-		std::vector<reversi::Movement_t> actions;
-		actions.reserve(64);
-		state->expand(actions, myColor, oppColor);
-		reversi::Movement_t minMovement;
-
-		if (actions.empty()) {
+		reversi::Movement_t maxMovement;
+		if (myActions.empty()) {
 			// Special case: we can't make any movements! Let maxplayer do its
-			// thing.
+			// thing: we already know that he has movements because of the check
+			// above.
 			movement->x = movement->y = -1;	// "No movement"
-			return computeMax(state, heuristic, depth-1, alpha, beta, &minMovement, oppColor, myColor);
+			return computeMax(state, heuristic, depth-1, alpha, beta, &maxMovement, oppColor, myColor);
 		}
-		for (std::vector<reversi::Movement_t>::const_iterator it = actions.begin(); it != actions.end(); ++it) {
+		for (std::vector<reversi::Movement_t>::const_iterator it = myActions.begin(); it != myActions.end(); ++it) {
 			const reversi::Movement_t & move = *it;
 			reversi::State_t child(state, &move, myColor);
-			double newValue = computeMax(&child, heuristic, depth-1, alpha, beta, &minMovement, oppColor, myColor);
+			double newValue = computeMax(&child, heuristic, depth-1, alpha, beta, &maxMovement, oppColor, myColor);
 			if (newValue < bestValue) {
 				bestMovement = *it;
 				bestValue = newValue;

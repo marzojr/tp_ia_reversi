@@ -27,7 +27,7 @@ EXTRADIST := compila.sh launch.sh othello.sh
 DOCS := $(SRCDOCS:%.odt=%.pdf)
 
 # Variáveis para compilação
-CXXFLAGS = -O3 -s -std=c++11 -Wall -Wextra -pedantic -MMD
+CXXFLAGS = -O3 -s -std=c++11 -Wall -Wextra -Wcast-qual -pedantic -MMD
 CPPFLAGS = 
 INCFLAGS = 
 LDFLAGS = -Wl,-rpath,/usr/local/lib

@@ -1,22 +1,48 @@
 #include <sstream>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include "reversi.h"
 
 namespace reversi{
-
-	Occupancy_t oppositeColor(Occupancy_t color){
-		return (Occupancy_t)-(char)color;
+	constexpr Occupancy_t oppositeColor(Occupancy_t color){
+		return static_cast<Occupancy_t>(-static_cast<char>(color));
 	}
 	
 	std::string Movement_t::toString() const{
 		std::stringstream ss;
-		ss << x << ',' << y;
+		ss << static_cast<int>(x) << ',' << static_cast<int>(y);
 		return ss.str();
 	}
 	
 	State_t::State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color){
-
+		// First, duplicate the parent.
+		for (unsigned ii = 0; ii < 8; ii++){
+			for (unsigned jj = 0; jj < 8; jj++){
+				board[ii][jj] = parent->board[ii][jj];
+			}
+		}
+		board[movement->y][movement->x] = color;
+		Occupancy_t otherclr = oppositeColor(color);
+		// Radiate outwards from point looking for contiguous runs of the
+		// opposing color followed by the source color.
+		static const int incX[8] = { 1, 1, 0, -1, -1, -1, 0, 1};
+		static const int incY[8] = { 0, 1, 1, 1, 0, -1, -1, -1};
+		for (unsigned ii = 0; ii < 8; ii++){
+			const int dX = incX[ii], dY = incY[ii];
+			int cX = movement->x + dX, cY = movement->y + dY;
+			while (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && board[cY][cX] == otherclr) {
+				cX += dX;
+				cY += dY;
+			}
+			if (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && board[cY][cX] == color) {
+				cX = movement->x + dX;
+				cY = movement->y + dY;
+				while (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && board[cY][cX] == otherclr) {
+					board[cY][cX] = color;
+				}
+			}
+		}
 	}
 
 	void State_t::init(std::istream & conf){
@@ -129,7 +155,7 @@ namespace reversi{
 	void State_t::expand(std::vector<Movement_t> & actionsB, std::vector<Movement_t> & actionsW) const{
 
 		// We define the starting x and y, as well as the increment for every row/column/diagonal in each direction
-		const int startX[8][16] = {
+		static const int startX[8][16] = {
 			{ 0, 0, 0, 0, 0, 0, 0, 0, -1}, // E (>) 
 			{ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, -1}, // SE 
 			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // S (V)
@@ -139,7 +165,7 @@ namespace reversi{
 			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // N (^)
 			{ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, -1 }, // NE
 		};
-		const int startY[8][16] = {
+		static const int startY[8][16] = {
 			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // E (>)
 			{ 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, -1 }, // SE
 			{ 0, 0, 0, 0, 0, 0, 0, 0, -1 }, // S (V)
@@ -149,8 +175,8 @@ namespace reversi{
 			{ 7, 7, 7, 7, 7, 7, 7, -1 }, // N(^)
 			{ 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, -1 }, // NE
 		};
-		const int incX[8] = { 1, 1, 0, -1, -1, -1, 0, 1};
-		const int incY[8] = { 0, 1, 1, 1, 0, -1, -1, -1};
+		static const int incX[8] = { 1, 1, 0, -1, -1, -1, 0, 1};
+		static const int incY[8] = { 0, 1, 1, 1, 0, -1, -1, -1};
 
 		// Auxiliary where we store if a position can be black or white
 		uint8_t possibleBoard[8][8];
