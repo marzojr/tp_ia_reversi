@@ -34,10 +34,10 @@ int main(int argc, char ** argv){
 	} else{
 		char argColorUpper[6];
 		for (size_t i = 0; i < 6; i++) argColorUpper[i] = toupper(argColor[i]);
-		if (strcmp(argColorUpper, "WHITE")){
+		if (!strcmp(argColorUpper, "WHITE")){
 			myColor  = reversi::Occupancy_t::WHITE;
 			oppColor = reversi::Occupancy_t::BLACK;
-		} else if (strcmp(argColorUpper, "BLACK")){
+		} else if (!strcmp(argColorUpper, "BLACK")){
 			myColor  = reversi::Occupancy_t::BLACK;
 			oppColor = reversi::Occupancy_t::WHITE;
 		} else{
@@ -47,8 +47,8 @@ int main(int argc, char ** argv){
 	}
 	//       Read input type
 	enum { FROM_FILE, FROM_STRING} readType;
-	if (!strcmp(argReadType, "-f") == 0) readType = FROM_FILE;
-	else if (!strcmp(argReadType, "-s") == 0) readType = FROM_STRING;
+	if (strcmp(argReadType, "-f") == 0) readType = FROM_FILE;
+	else if (strcmp(argReadType, "-s") == 0) readType = FROM_STRING;
 	else{
 		fprintf(stderr, "ERROR: Expected a read type of \"-f\" or \"-s\", instead got \"%s\"!\n", argReadType);
 		printFormatAndExit(argProgram);
