@@ -1,4 +1,5 @@
 #include "heuristic.h"
+#include <cstdio> // [DEBUG] 
 
 double Heuristic_t::eval(
 	const reversi::State_t * state,
@@ -6,9 +7,11 @@ double Heuristic_t::eval(
 	const std::vector<reversi::Movement_t> & actionsW, 
 	reversi::Occupancy_t color
 ){
-	return 42;
 	// Makes an alias for the board being worked on
-	/*const reversi::Occupancy_t (&board)[8][8] = *state->getBoard();
+	const reversi::Occupancy_t (&board)[8][8] = *state->getBoard();
+
+	/* All heuristics are computed on a [-1, 1] range, assuming we are optimizing for white 
+	 * We later invert the score if we are actually optimizing for black */
 
 	// 1) Difference in disk counts
 	size_t countW = 0, countB = 0;
@@ -18,6 +21,9 @@ double Heuristic_t::eval(
 			countB += board[y][x] == reversi::Occupancy_t::BLACK;
 		}
 	}
+	double hCountVal;
+	if (countW + countB == 0) hCountVal = 0;
+	else hCountVal = ((double)countW - (double)countB) / (countW + countB);
 	
 
 	// 2) Boards weighing different positions
@@ -45,6 +51,16 @@ double Heuristic_t::eval(
 			{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },
 			{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 		},
+		#undef COST_A 
+		#undef COST_B 
+		#undef COST_C 
+		#undef COST_D 
+		#undef COST_E 
+		#undef COST_F 
+		#undef COST_G 
+		#undef COST_H 
+		#undef COST_I 
+		#undef COST_J 
 
 		// [Board 2] Source: http://kartikkukreja.wordpress.com/2013/03/30/heuristic-function-for-reversiothello/
 		#define COST_A 20
@@ -67,19 +83,44 @@ double Heuristic_t::eval(
 			{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },
 			{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 		}
+		#undef COST_A 
+		#undef COST_B 
+		#undef COST_C 
+		#undef COST_D 
+		#undef COST_E 
+		#undef COST_F 
+		#undef COST_G 
+		#undef COST_H 
+		#undef COST_I 
+		#undef COST_J 
 
 	};
-	int wBoardCost[wBoardCnt];
+	int wBoardCostW[wBoardCnt];
+	int wBoardCostB[wBoardCnt];
 	for (size_t i = 0; i < wBoardCnt; i++){
+		wBoardCostW[i] = 0;
+		wBoardCostB[i] = 0;
 		for (size_t y = 0; y < 8; y++){
 			for (size_t x = 0; x < 8; x++){
-				if (board[y][x] == reversi::Occupancy_t::WHITE) wBoardCost[i] += wBoard[i][y][x];
-				else if (board[y][x] == reversi::Occupancy_t::BLACK) wBoardCost[i] -= wBoard[i][y][x];
-	}}}*/
+				if (board[y][x] == reversi::Occupancy_t::WHITE) 
+					wBoardCostW[i] += wBoard[i][y][x];
+				else if (board[y][x] == reversi::Occupancy_t::BLACK) 
+					wBoardCostB[i] += wBoard[i][y][x];
+			}
+		}
+	}
+	double hWBoard[wBoardCnt];
+	for (size_t i = 0; i < wBoardCnt; i++){
+		if (wBoardCostW[i] + wBoardCostB[i] == 0) hWBoard[i] = 0.0;
+		else hWBoard[i] = (double) (wBoardCostW[i] - wBoardCostB[i]) / (wBoardCostW[i] + wBoardCostB[i]);
+	}
 
 	// 3) Relative Frontier sizes
 	size_t frontierSizeW = actionsW.size();
 	size_t frontierSizeB = actionsB.size();
+	double hFrontierSize;
+	if (frontierSizeW + frontierSizeB == 0) hFrontierSize = 0.0;
+	else hFrontierSize = ((double)frontierSizeW - (double)frontierSizeB) / (frontierSizeW + frontierSizeB);
 
 	/* 4) Unflipable coins/stability
 	*    A coin can be stable (weight 1) if it is unflippable:
@@ -90,12 +131,18 @@ double Heuristic_t::eval(
 	* Is this actually computable deterministically in polynomial time?
 	*/
 
+	// Inverts the heuristic values if we are actually placing a black piece
+	if (color == reversi::Occupancy_t::BLACK){
+		hCountVal *= -1;
+		hFrontierSize *= -1;
+		for (size_t i = 0; i < wBoardCnt; i++){
+			hWBoard[i] *= -1;
+		}
+	}
 
-	//printf("CountW: %i; CountB: %i\n", countW, countB);
-	//printf("Board cost (0): %i; (1): %i\n", wBoardCost[0], wBoardCost[1]);
-
-
-
-	return 42;
+	// Does a harmonic average of all heuristics adding one (so we avoid sign flippage)
+	double hVal = (hCountVal + 1)*(hFrontierSize + 1);
+	for (size_t i = 0; i < wBoardCnt; i++) hVal *= 1 + hWBoard[i];
+	return hVal;
 }
 
