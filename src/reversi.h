@@ -13,13 +13,22 @@ namespace reversi{
 	enum class Occupancy_t : char {
 		BLACK = -1, EMPTY = 0, WHITE = 1
 	};
-	constexpr Occupancy_t oppositeColor(Occupancy_t color){
+	inline Occupancy_t oppositeColor(Occupancy_t color){
 		return static_cast<Occupancy_t>(-static_cast<char>(color));
 	}
 
 	struct Movement_t{
 		boardCoord_t x, y;
 		std::string toString() const;
+		Movement_t() {}
+		Movement_t(boardCoord_t _x, boardCoord_t _y) : x(_x), y(_y) {}
+		Movement_t(const Movement_t & other) : x(other.x), y(other.y) {}
+		Movement_t & operator=(const Movement_t & rhs) {
+			if (this != &rhs){
+				x = rhs.x; y = rhs.y;
+			}
+			return *this;
+		}
 	};
 
 	class State_t{

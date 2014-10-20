@@ -23,11 +23,11 @@ DISTFILE := tp_ia_reversi
 
 # Documentação
 SRCDOCS := $(wildcard *.odt)
-EXTRADIST := compila.sh launch.sh othello.sh
+EXTRADIST := compila.sh launch.sh othello.sh src/opening.dat
 DOCS := $(SRCDOCS:%.odt=%.pdf)
 
 # Variáveis para compilação
-CXXFLAGS = -O3 -s -std=c++11 -Wall -Wextra -Wcast-qual -pedantic -MMD
+CXXFLAGS = -O3 -s -std=c++0x -Wall -Wextra -Wcast-qual -pedantic -MMD
 CPPFLAGS = 
 INCFLAGS = 
 LDFLAGS = -Wl,-rpath,/usr/local/lib
