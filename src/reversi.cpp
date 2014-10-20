@@ -5,10 +5,6 @@
 #include "reversi.h"
 
 namespace reversi{
-	constexpr Occupancy_t oppositeColor(Occupancy_t color){
-		return static_cast<Occupancy_t>(-static_cast<char>(color));
-	}
-	
 	std::string Movement_t::toString() const{
 		std::stringstream ss;
 		ss << static_cast<int>(x) << ',' << static_cast<int>(y);
@@ -31,15 +27,17 @@ namespace reversi{
 		for (unsigned ii = 0; ii < 8; ii++){
 			const int dX = incX[ii], dY = incY[ii];
 			int cX = movement->x + dX, cY = movement->y + dY;
-			while (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && board[cY][cX] == otherclr) {
+			while (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && parent->board[cY][cX] == otherclr) {
 				cX += dX;
 				cY += dY;
 			}
-			if (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && board[cY][cX] == color) {
+			if (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && parent->board[cY][cX] == color) {
 				cX = movement->x + dX;
 				cY = movement->y + dY;
-				while (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && board[cY][cX] == otherclr) {
+				while (cX >= 0 && cX < 8 && cY >= 0 && cY < 8 && parent->board[cY][cX] == otherclr) {
 					board[cY][cX] = color;
+					cX += dX;
+					cY += dY;
 				}
 			}
 		}

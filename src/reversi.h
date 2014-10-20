@@ -13,8 +13,10 @@ namespace reversi{
 	enum class Occupancy_t : char {
 		BLACK = -1, EMPTY = 0, WHITE = 1
 	};
-	constexpr Occupancy_t oppositeColor(Occupancy_t color);
-	
+	constexpr Occupancy_t oppositeColor(Occupancy_t color){
+		return static_cast<Occupancy_t>(-static_cast<char>(color));
+	}
+
 	struct Movement_t{
 		boardCoord_t x, y;
 		std::string toString() const;
