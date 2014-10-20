@@ -4,7 +4,9 @@
 
 namespace reversi{
 	typedef std::unordered_map<std::string, Movement_t> Opening_t;
-	Opening_t openings{};
+	static const Opening_t openings{
+#include "opening.dat"
+	};
 
 	bool getOpening(State_t * state, Movement_t * movement){
 		Opening_t::const_iterator it;
