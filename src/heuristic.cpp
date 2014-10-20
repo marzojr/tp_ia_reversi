@@ -31,16 +31,16 @@ double Heuristic_t::eval(
 	const int wBoard[wBoardCnt][8][8] = 
 	{
 		// [Board 1] Source: http://www.samsoft.org.uk/reversi/strategy.htm
-		#define COST_A 99
-		#define COST_B -8
-		#define COST_C 8
-		#define COST_D 6
-		#define COST_E -24
-		#define COST_F -4
-		#define COST_G -3
-		#define COST_H 7
-		#define COST_I 4
-		#define COST_J 0
+		#define COST_A  99 + 24
+		#define COST_B  -8 + 24
+		#define COST_C   8 + 24
+		#define COST_D   6 + 24
+		#define COST_E -24 + 24
+		#define COST_F  -4 + 24
+		#define COST_G  -3 + 24
+		#define COST_H   7 + 24
+		#define COST_I   4 + 24
+		#define COST_J   0 + 24
 		{
 			{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 			{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },
@@ -63,16 +63,16 @@ double Heuristic_t::eval(
 		#undef COST_J 
 
 		// [Board 2] Source: http://kartikkukreja.wordpress.com/2013/03/30/heuristic-function-for-reversiothello/
-		#define COST_A 20
-		#define COST_B -3
-		#define COST_C 11
-		#define COST_D 8
-		#define COST_E -7
-		#define COST_F -4
-		#define COST_G 1
-		#define COST_H 2
-		#define COST_I 2
-		#define COST_J -3
+		#define COST_A 20 + 7
+		#define COST_B -3 + 7
+		#define COST_C 11 + 7
+		#define COST_D  8 + 7
+		#define COST_E -7 + 7
+		#define COST_F -4 + 7
+		#define COST_G  1 + 7
+		#define COST_H  2 + 7
+		#define COST_I  2 + 7
+		#define COST_J -3 + 7
 		{
 			{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 			{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },

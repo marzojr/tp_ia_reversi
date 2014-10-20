@@ -68,7 +68,8 @@ int main(int argc, char ** argv){
 		startingState = new reversi::State_t(argReadData);
 	}
 
-	printf("%s\n", startingState->toString().c_str());
+	// [DEBUG] Print out the board
+	//printf("%s\n", startingState->toString().c_str());
 
 	// [DEBUG] Print out the possible movements for each player given the board
 	/*std::vector<reversi::Movement_t> movementW, movementB;
@@ -77,7 +78,7 @@ int main(int argc, char ** argv){
 	for (auto i = movementW.begin(), iend = movementW.end(); i != iend; i++) printf("%s\n", i->toString().c_str());
 	printf("Black movements:\n");
 	for (auto i = movementB.begin(), iend = movementB.end(); i != iend; i++) printf("%s\n", i->toString().c_str());
-	printf("~~\n");*/
+	printf("Done printing configurations!\n");*/
 
 	// Compute the next state using min-max
 	reversi::Movement_t movement;
