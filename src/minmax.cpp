@@ -9,7 +9,7 @@
 #endif
 
 namespace minmax{
-	const int maxDepth = 5;	// For now
+	const int maxDepth = 8;	// For now
 	const int depthBound = -5;	// For now
 
 	template<bool max> static double computeMinmax(
@@ -82,7 +82,7 @@ namespace minmax{
 	}
 	
 	void computeMinmax(reversi::State_t * base, const Heuristic_t & H, reversi::Movement_t * movement, reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor){
-		//if (reversi::getOpening(base, movement)) return;
+		if (reversi::getOpening(base, movement)) return;
 		computeMinmax<true>(base, H, maxDepth, -INFINITY, INFINITY, movement, myColor, oppColor);
 	}
 }
