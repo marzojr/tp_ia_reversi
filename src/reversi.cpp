@@ -20,12 +20,10 @@ namespace reversi{
 	}
 	
 	State_t::State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color){
+
 		// First, duplicate the parent.
-		for (unsigned ii = 0; ii < 8; ii++){
-			for (unsigned jj = 0; jj < 8; jj++){
-				board[ii][jj] = parent->board[ii][jj];
-			}
-		}
+		memcpy(board, parent->board, 8 * 8 * sizeof(Occupancy_t));
+
 		board[movement->y][movement->x] = color;
 		Occupancy_t otherclr = oppositeColor(color);
 		// Radiate outwards from point looking for contiguous runs of the
@@ -229,80 +227,6 @@ namespace reversi{
 					actionsBCnt++;
 		}}}
 
-		// We define the starting x and y, as well as the increment for every row/column/diagonal in each direction
-		/*static const int startX[8][16] = {
-			{ 0, 0, 0, 0, 0, 0, 0, 0, -1}, // E (>) 
-			{ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, -1}, // SE 
-			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // S (V)
-			{ 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, -1 }, // SW
-			{ 7, 7, 7, 7, 7, 7, 7, 7, -1 }, // W (<)
-			{ 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, -1 }, // NW
-			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // N (^)
-			{ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, -1 }, // NE
-		};
-		static const int startY[8][16] = {
-			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // E (>)
-			{ 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, -1 }, // SE
-			{ 0, 0, 0, 0, 0, 0, 0, 0, -1 }, // S (V)
-			{ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, -1 }, // SW
-			{ 0, 1, 2, 3, 4, 5, 6, 7, -1 }, // W (<)
-			{ 7, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, -1 }, // NW
-			{ 7, 7, 7, 7, 7, 7, 7, -1 }, // N(^)
-			{ 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, -1 }, // NE
-		};
-		static const int incX[8] = { 1, 1, 0, -1, -1, -1, 0, 1};
-		static const int incY[8] = { 0, 1, 1, 1, 0, -1, -1, -1};
-
-		// Auxiliary where we store if a position can be black or white
-		uint8_t possibleBoard[8][8];
-		memset(possibleBoard, 0x00, 8 * 8 * sizeof(uint8_t));
-		const uint8_t possibleW = 0x01;
-		const uint8_t possibleB = 0x02;
-
-		// Iterate over each direction and row/column/diagonal, computing placements
-		for (size_t i = 0; i < 8; i++){
-			for (size_t j = 0; ; j++){
-				
-				// Load the start of the new search
-				int x = startX[i][j];
-				int y = startY[i][j];
-				const int ix = incX[i];
-				const int iy = incY[i];
-
-				// If the sentinel value was found, all elements in this direction were searched
-				if (x == -1 || y == -1) break;
-
-				/* Compute empty cells as follows:
-				 * 1) If the current cell is empty, store its address
-				 * 2) Store the opposite color to that of the previous cell; Initially set to empty
-				 * 3) If the color of the current cell is the same as the previous, and neither is empty, the last empty cell can be this color
-				 * /
-				uint8_t * lastEmpty = NULL;
-				Occupancy_t placeColor = Occupancy_t::EMPTY;
-				do{
-					Occupancy_t color = board[y][x];
-					if (color == Occupancy_t::EMPTY) lastEmpty = &possibleBoard[y][x];
-					else if (color == placeColor && lastEmpty != NULL){
-						*lastEmpty |= (placeColor == Occupancy_t::WHITE) ? possibleW : possibleB;
-						lastEmpty = NULL;
-					}
-					placeColor = oppositeColor(color);
-					x += ix;
-					y += iy;
-				} while (0 <= x && x < 8 && 0 <= y && y < 8);				
-			}* /
-		}
-
-		// Pass over the possibleBloard and store the possible movements
-		/*Movement_t movement;
-		for (size_t y = 0; y < 8; y++){
-			movement.y = y;
-			for (size_t x = 0; x < 8; x++){
-				movement.x = x;
-				if (possibleBoard[y][x] & possibleW) actionsW.push_back(movement);
-				if (possibleBoard[y][x] & possibleB) actionsB.push_back(movement);
-			}
-		}*/
 	}
 }
 
