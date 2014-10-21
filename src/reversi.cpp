@@ -163,7 +163,7 @@ namespace reversi{
 		 *     and expandPlacement3 ... expandPlacement8 -- A matrix that, for a given trinary representation, 
 		 *           represents {W, W, W, B, B, B}, where W or B are a position that can have that color in it, 
 		 *           and a value of -1 should be ignored */
-		const uint8_t(*b)[8] = (uint8_t(*)[8]) board;
+		const uint8_t (*b)[8] = reinterpret_cast<const uint8_t (*)[8]>(board);
 		#include "expand.def"
 		const static int(*expandPlacement[9])[6] = {
 			NULL, NULL, NULL, expandPlacement3, expandPlacement4, expandPlacement5, expandPlacement6, expandPlacement7, expandPlacement8

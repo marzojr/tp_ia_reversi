@@ -27,20 +27,20 @@ double Heuristic_t::eval(
 	
 
 	// 2) Boards weighing different positions
-	const size_t wBoardCnt = 2;
-	const int wBoard[wBoardCnt][8][8] = 
+	static const size_t wBoardCnt = 2;
+	static const int wBoard[wBoardCnt][8][8] = 
 	{
 		// [Board 1] Source: http://www.samsoft.org.uk/reversi/strategy.htm
-		#define COST_A  99 + 24
-		#define COST_B  -8 + 24
-		#define COST_C   8 + 24
-		#define COST_D   6 + 24
-		#define COST_E -24 + 24
-		#define COST_F  -4 + 24
-		#define COST_G  -3 + 24
-		#define COST_H   7 + 24
-		#define COST_I   4 + 24
-		#define COST_J   0 + 24
+		#define COST_A  99
+		#define COST_B  -8
+		#define COST_C   8
+		#define COST_D   6
+		#define COST_E -24
+		#define COST_F  -4
+		#define COST_G  -3
+		#define COST_H   7
+		#define COST_I   4
+		#define COST_J   0
 		{
 			{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 			{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },
@@ -51,28 +51,28 @@ double Heuristic_t::eval(
 			{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },
 			{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 		},
-		#undef COST_A 
-		#undef COST_B 
-		#undef COST_C 
-		#undef COST_D 
-		#undef COST_E 
-		#undef COST_F 
-		#undef COST_G 
-		#undef COST_H 
-		#undef COST_I 
-		#undef COST_J 
+		#undef COST_A
+		#undef COST_B
+		#undef COST_C
+		#undef COST_D
+		#undef COST_E
+		#undef COST_F
+		#undef COST_G
+		#undef COST_H
+		#undef COST_I
+		#undef COST_J
 
 		// [Board 2] Source: http://kartikkukreja.wordpress.com/2013/03/30/heuristic-function-for-reversiothello/
-		#define COST_A 20 + 7
-		#define COST_B -3 + 7
-		#define COST_C 11 + 7
-		#define COST_D  8 + 7
-		#define COST_E -7 + 7
-		#define COST_F -4 + 7
-		#define COST_G  1 + 7
-		#define COST_H  2 + 7
-		#define COST_I  2 + 7
-		#define COST_J -3 + 7
+		#define COST_A 20
+		#define COST_B -3
+		#define COST_C 11
+		#define COST_D  8
+		#define COST_E -7
+		#define COST_F -4
+		#define COST_G  1
+		#define COST_H  2
+		#define COST_I  2
+		#define COST_J -3
 		{
 			{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 			{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },
@@ -131,18 +131,71 @@ double Heuristic_t::eval(
 	* Is this actually computable deterministically in polynomial time?
 	*/
 
+	// 5) Fudge factor to make minmax select corners
+	double cornerMastery = 0.0;
+	const double cornerBonus = 1.0;
+	if (board[0][0] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
+	else if (board[0][0] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
+	if (board[0][7] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
+	else if (board[0][7] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
+	if (board[7][0] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
+	else if (board[7][0] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
+	if (board[7][7] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
+	else if (board[7][7] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
+
+	// 6) Fudge factor to try harder to not yield corners
+	double cornerCloseness = 0.0, cornerClosenessW = 0.0, cornerClosenessB = 0.0;
+	const double borderPenalty = 1.0, innerPenalty = 2.0;
+	if (board[0][0] == reversi::Occupancy_t::EMPTY){
+		cornerClosenessW += borderPenalty * (board[0][1] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += innerPenalty  * (board[1][1] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += borderPenalty * (board[1][0] == reversi::Occupancy_t::WHITE);
+		cornerClosenessB += borderPenalty * (board[0][1] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += innerPenalty  * (board[1][1] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += borderPenalty * (board[1][0] == reversi::Occupancy_t::BLACK);
+	}
+	if (board[0][7] == reversi::Occupancy_t::EMPTY){
+		cornerClosenessW += borderPenalty * (board[0][6] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += innerPenalty  * (board[1][6] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += borderPenalty * (board[1][7] == reversi::Occupancy_t::WHITE);
+		cornerClosenessB += borderPenalty * (board[0][6] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += innerPenalty  * (board[1][6] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += borderPenalty * (board[1][7] == reversi::Occupancy_t::BLACK);
+	}
+	if (board[7][0] == reversi::Occupancy_t::EMPTY){
+		cornerClosenessW += borderPenalty * (board[7][1] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += innerPenalty  * (board[6][1] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += borderPenalty * (board[6][0] == reversi::Occupancy_t::WHITE);
+		cornerClosenessB += borderPenalty * (board[7][1] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += innerPenalty  * (board[6][1] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += borderPenalty * (board[6][0] == reversi::Occupancy_t::BLACK);
+	}
+	if (board[7][7] == reversi::Occupancy_t::EMPTY){
+		cornerClosenessW += borderPenalty * (board[6][7] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += innerPenalty  * (board[6][6] == reversi::Occupancy_t::WHITE);
+		cornerClosenessW += borderPenalty * (board[7][6] == reversi::Occupancy_t::WHITE);
+		cornerClosenessB += borderPenalty * (board[6][7] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += innerPenalty  * (board[6][6] == reversi::Occupancy_t::BLACK);
+		cornerClosenessB += borderPenalty * (board[7][6] == reversi::Occupancy_t::BLACK);
+	}
+	cornerCloseness = cornerClosenessW - cornerClosenessB;
+
 	// Inverts the heuristic values if we are actually placing a black piece
 	if (color == reversi::Occupancy_t::BLACK){
 		hCountVal *= -1;
 		hFrontierSize *= -1;
+		cornerCloseness *= -1;
+		cornerMastery *= -1;
 		for (size_t i = 0; i < wBoardCnt; i++){
 			hWBoard[i] *= -1;
 		}
 	}
 
 	// Does a harmonic average of all heuristics adding one (so we avoid sign flippage)
-	double hVal = (hCountVal + 1)*(hFrontierSize + 1);
-	for (size_t i = 0; i < wBoardCnt; i++) hVal *= 1 + hWBoard[i];
+	static const double weightCount = 10.0, weightFrontier = 75.0, weightCloseness = 5000.0, weightCorner = 10000.0;
+	static const double weightBoard[wBoardCnt] = {10.0, 10.0};
+	double hVal = weightCount * hCountVal + weightFrontier * hFrontierSize + weightCloseness * cornerCloseness + weightCorner * cornerMastery;
+	for (size_t i = 0; i < wBoardCnt; i++) hVal += weightBoard[i] * hWBoard[i];
 	return hVal;
 }
 

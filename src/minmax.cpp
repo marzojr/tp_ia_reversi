@@ -9,7 +9,7 @@
 #endif
 
 namespace minmax{
-	const int maxDepth = 10;	// For now
+	const int maxDepth = 7;	// For now
 	const int depthBound = -5;	// For now
 
 	template<bool max> static double computeMinmax(
