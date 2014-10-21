@@ -178,7 +178,7 @@ double Heuristic_t::eval(
 		cornerClosenessB += innerPenalty  * (board[6][6] == reversi::Occupancy_t::BLACK);
 		cornerClosenessB += borderPenalty * (board[7][6] == reversi::Occupancy_t::BLACK);
 	}
-	cornerCloseness = cornerClosenessB - cornerClosenessW;
+	cornerCloseness = cornerClosenessW - cornerClosenessB;
 
 	// Inverts the heuristic values if we are actually placing a black piece
 	if (color == reversi::Occupancy_t::BLACK){
