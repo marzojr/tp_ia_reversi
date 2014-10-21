@@ -14,7 +14,12 @@ namespace reversi{
 		BLACK = 2, EMPTY = 0, WHITE = 1
 	};
 
-	inline Occupancy_t oppositeColor(Occupancy_t color);
+	inline Occupancy_t oppositeColor(Occupancy_t color){
+		if (color == Occupancy_t::BLACK) return Occupancy_t::WHITE;
+		else if (color == Occupancy_t::WHITE) return Occupancy_t::BLACK;
+		else return Occupancy_t::EMPTY;
+		//return static_cast<Occupancy_t>(-static_cast<char>(color));
+	}
 
 	struct Movement_t{
 		boardCoord_t x, y;
@@ -43,6 +48,7 @@ namespace reversi{
 		std::string toString(bool flipMain, bool flipRev) const;
 		void expand(Movement_t * actionsB, size_t &actionsBCnt, Movement_t * actionsW, size_t &actionsWCnt) const;
 		const Occupancy_t(*getBoard() const)[8][8];
+		int score() const;
 	};
 }
 

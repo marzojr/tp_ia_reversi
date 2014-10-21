@@ -9,11 +9,11 @@
 #endif
 
 namespace minmax{
-	const int maxDepth = 7;	// For now
+	const int maxDepth = 5;	// For now
 	const int depthBound = -5;	// For now
 
 	template<bool max> static double computeMinmax(
-		const reversi::State_t * state, Heuristic_t * heuristic,
+		const reversi::State_t * state, const Heuristic_t & heuristic,
 		int depth, double alpha, double beta, reversi::Movement_t * movement,
 		reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor)
 	{
@@ -26,7 +26,7 @@ namespace minmax{
 
 		// If went through full depth, or if reached a leaf node, it is time to wrap up the search.
 		if (depth <= 0 || (actionsB == 0 && actionsW == 0)) {
-			double value = heuristic->eval(state, actionsB, actionsBCnt, actionsW, actionsWCnt, myColor);
+			double value = heuristic.eval(state, actionsBCnt, actionsWCnt, myColor);
 			// TODO: extend search if heuristic value is exceptionally good
 			return value;
 		}
@@ -36,6 +36,15 @@ namespace minmax{
 		const size_t myActionsCnt = myColor == reversi::Occupancy_t::WHITE ? actionsWCnt : actionsBCnt;
 		size_t bestMovement = (size_t)-1;
 		reversi::Movement_t movementOpponent;
+
+		// Collect statistics on branching factor
+		/* static int actionsSum;
+		static int actionsCnt;
+		if(depth <= 5){		
+			actionsSum += myActionsCnt;
+			actionsCnt++;
+		}
+		printf("\r%i %s %lf\t", depth, max ? "max" : "min", (double)actionsSum/actionsCnt);*/
 
 		// If we have no moves, let the opponent move
 		if (myActionsCnt == 0) {
@@ -72,9 +81,8 @@ namespace minmax{
 		return max ? alpha : beta;
 	}
 	
-	void computeMinmax(reversi::State_t * base, reversi::Movement_t * movement, reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor){
-		if (reversi::getOpening(base, movement)) return;
-		Heuristic_t heuristic;
-		computeMinmax<true>(base, &heuristic, maxDepth, -INFINITY, INFINITY, movement, myColor, oppColor);
+	void computeMinmax(reversi::State_t * base, const Heuristic_t & H, reversi::Movement_t * movement, reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor){
+		//if (reversi::getOpening(base, movement)) return;
+		computeMinmax<true>(base, H, maxDepth, -INFINITY, INFINITY, movement, myColor, oppColor);
 	}
 }

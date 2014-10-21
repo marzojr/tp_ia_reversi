@@ -12,13 +12,6 @@ namespace reversi{
 		return ss.str();
 	}
 
-	inline Occupancy_t oppositeColor(Occupancy_t color){
-		if (color == Occupancy_t::BLACK) return Occupancy_t::WHITE;
-		else if (color == Occupancy_t::WHITE) return Occupancy_t::BLACK;
-		else return Occupancy_t::EMPTY;
-		//return static_cast<Occupancy_t>(-static_cast<char>(color));
-	}
-	
 	State_t::State_t(const State_t * parent, const Movement_t * movement, Occupancy_t color){
 
 		// First, duplicate the parent.
@@ -198,7 +191,7 @@ namespace reversi{
 			}
 			if (values[3] != -1){
 				assert(y0 + incy*values[3] < 8 && x0 + incx*values[3] < 8);
-				possibleB[y0 + incy*values[3]][x0 + incx*values[3]] = true;
+				possibleB[y0 + incy*values[3]][x0 + incx*values[3]] = true;	
 				if (values[4] != -1){
 					assert(y0 + incy*values[4] < 8 && x0 + incx*values[4] < 8);
 					possibleB[y0 + incy*values[4]][x0 + incx*values[4]] = true;
@@ -228,5 +221,14 @@ namespace reversi{
 		}}}
 
 	}
+}
+
+int reversi::State_t::score() const {
+	int total = 0;
+	for (unsigned ii = 0; ii < 8; ii++)
+		for (unsigned jj = 0; jj < 8; jj++)
+			if (board[ii][jj] == Occupancy_t::WHITE) total++;
+			else if (board[ii][jj] == Occupancy_t::BLACK) total--;
+	return total;
 }
 
