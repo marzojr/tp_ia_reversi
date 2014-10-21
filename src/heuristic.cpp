@@ -134,14 +134,14 @@ double Heuristic_t::eval(
 	// 5) Fudge factor to make minmax select corners
 	double cornerMastery = 0.0;
 	const double cornerBonus = 1.0;
-	if (board[0][0] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
-	else if (board[0][0] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
-	if (board[0][7] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
-	else if (board[0][7] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
-	if (board[7][0] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
-	else if (board[7][0] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
-	if (board[7][7] == reversi::Occupancy_t::WHITE) cornerMastery += cornerBonus;
-	else if (board[7][7] == reversi::Occupancy_t::BLACK) cornerMastery -= cornerBonus;
+	cornerMastery += cornerBonus * (board[0][0] == reversi::Occupancy_t::WHITE);
+	cornerMastery += cornerBonus * (board[0][7] == reversi::Occupancy_t::WHITE);
+	cornerMastery += cornerBonus * (board[7][0] == reversi::Occupancy_t::WHITE);
+	cornerMastery += cornerBonus * (board[7][7] == reversi::Occupancy_t::WHITE);
+	cornerMastery -= cornerBonus * (board[0][0] == reversi::Occupancy_t::BLACK);
+	cornerMastery -= cornerBonus * (board[0][7] == reversi::Occupancy_t::BLACK);
+	cornerMastery -= cornerBonus * (board[7][0] == reversi::Occupancy_t::BLACK);
+	cornerMastery -= cornerBonus * (board[7][7] == reversi::Occupancy_t::BLACK);
 
 	// 6) Fudge factor to try harder to not yield corners
 	double cornerCloseness = 0.0, cornerClosenessW = 0.0, cornerClosenessB = 0.0;
@@ -178,7 +178,7 @@ double Heuristic_t::eval(
 		cornerClosenessB += innerPenalty  * (board[6][6] == reversi::Occupancy_t::BLACK);
 		cornerClosenessB += borderPenalty * (board[7][6] == reversi::Occupancy_t::BLACK);
 	}
-	cornerCloseness = cornerClosenessW - cornerClosenessB;
+	cornerCloseness = cornerClosenessB - cornerClosenessW;
 
 	// Inverts the heuristic values if we are actually placing a black piece
 	if (color == reversi::Occupancy_t::BLACK){
