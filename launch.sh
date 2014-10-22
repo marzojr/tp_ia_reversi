@@ -1,3 +1,3 @@
 #!/bin/sh
-./reversi -f "$@" > move.txt
+./deep-diver -f "$@" > move.txt
 

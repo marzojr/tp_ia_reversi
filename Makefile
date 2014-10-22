@@ -18,7 +18,7 @@ SRCSH := $(wildcard $(DIRS)/*.h)
 
 # Arquivos de objeto
 OBJECTS := $(SRCSCXX:%.cpp=%.o)
-BIN := reversi
+BIN := deep-diver
 DISTFILE := tp_ia_reversi
 
 # Documentação
