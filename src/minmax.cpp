@@ -2,6 +2,7 @@
 #include "minmax.h"
 #include "heuristic.h"
 #include "opening.h"
+#include "timer.h"
 
 #ifndef INFINITY
 #include <limits>
@@ -11,6 +12,8 @@
 namespace minmax{
 	const int maxDepth = 8;	// For now
 	const int depthBound = -5;	// For now
+
+	Timer_t timer;
 
 	template<bool max> static double computeMinmax(
 		const reversi::State_t * state, const Heuristic_t & heuristic,
@@ -25,7 +28,7 @@ namespace minmax{
 		state->expand(actionsB, actionsBCnt, actionsW, actionsWCnt);
 
 		// If went through full depth, or if reached a leaf node, it is time to wrap up the search.
-		if (depth <= 0 || (actionsB == 0 && actionsW == 0)) {
+		if (depth <= 0 || (actionsB == 0 && actionsW == 0) || (depth < 2 && timer.getTime() >= 4.0)) {
 			double value = heuristic.eval(state, actionsBCnt, actionsWCnt, myColor);
 			// TODO: extend search if heuristic value is exceptionally good
 			return value;
@@ -82,6 +85,7 @@ namespace minmax{
 	}
 	
 	void computeMinmax(reversi::State_t * base, const Heuristic_t & H, reversi::Movement_t * movement, reversi::Occupancy_t myColor, reversi::Occupancy_t oppColor){
+		timer.start();
 		if (reversi::getOpening(base, movement)) return;
 		computeMinmax<true>(base, H, maxDepth, -INFINITY, INFINITY, movement, myColor, oppColor);
 	}
