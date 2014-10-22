@@ -42,6 +42,7 @@ int compete(Heuristic_t &HB, Heuristic_t &HW){
 	reversi::Movement_t movement;
 				
 	for(size_t i = 0; i < 60; i++){
+		//printf("(%i)", i); printDebug(&state, myColor);
 		minmax::computeMinmax(&state, myColor == reversi::Occupancy_t::WHITE ? HW : HB, &movement, myColor, opColor);
 		if(movement.x != -1 && movement.y != -1) {
 			reversi::State_t newstate(&state, &movement, myColor);
@@ -131,7 +132,7 @@ int main(int argc, char ** argv){
 		double HFrontier = atof(argHFrontier);
 		double HCloseness = atof(argHCloseness);
 		double HBoard = atof(argHBoard);
-		const double searchFraction = 0.02;		
+		const double searchFraction = 0.05;		
 
 		Heuristic_t HB, HW;
 		std::function<void(Heuristic_t &, double)>  setH1 = [&](Heuristic_t & H, double val){ 
@@ -162,13 +163,17 @@ int main(int argc, char ** argv){
 			score = compete(HB, HW) - compete(HW, HB);
 			if(score <= 0) initialValue = selectedCandidate; 
 		};
-		for(size_t i = 0;; i++){
+		for(size_t i = 0; i < 100; i++){
+			double oldHFrontier = HFrontier, oldHCloseness = HCloseness, oldHBoard = HBoard;
 			updateParam(HFrontier, setH1);
 			updateParam(HCloseness, setH2);
-			updateParam(HBoard, setH3);	 		
-			printf("(%zu) HCoinCount: %f; HFrontier: %f; HCloseness: %f; HBoard %f\n", 
+			updateParam(HBoard, setH3);
+			printf("(%i) HCoinCount: %f; HFrontier: %f; HCloseness: %f; HBoard %f\n", 
 				i, HCoinCount, HFrontier, HCloseness, HBoard);	
+			if (oldHFrontier == HFrontier && oldHCloseness == HCloseness && oldHBoard == HBoard) break;
 		}
+		printf("# %f %f %f %f\n", HCoinCount, HFrontier, HCloseness, HBoard);
+
 
 
 	//      Single run type

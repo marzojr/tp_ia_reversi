@@ -32,6 +32,9 @@ double Heuristic_t::eval(
 	double hCountVal = (double)countW - (double)countB;
 	
 
+	// If the game is over, then use the score as the "heuristic" value
+	//if (actionsBCnt == 0 && actionsWCnt == 0) return hCountVal * 1000.0 * (color == reversi::Occupancy_t::WHITE ? 1 : -1);
+
 	// 2) Boards weighing different positions
 	static const int wBoard[8][8] = 
 	{
