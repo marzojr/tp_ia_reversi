@@ -39,16 +39,16 @@ double Heuristic_t::eval(
 	static const int wBoard[8][8] = 
 	{
 		// [Board 1] Source: http://www.samsoft.org.uk/reversi/strategy.htm
-		#define COST_A  99+20
-		#define COST_B  -8+-3
-		#define COST_C   8+11
-		#define COST_D   6+8
-		#define COST_E -24+-7
-		#define COST_F  -4+-4
-		#define COST_G  -3+1
-		#define COST_H   7+2
-		#define COST_I   4+2
-		#define COST_J   0+3
+		#define COST_A  99
+		#define COST_B  -8
+		#define COST_C   8
+		#define COST_D   6
+		#define COST_E -24
+		#define COST_F  -4
+		#define COST_G  -3
+		#define COST_H   7
+		#define COST_I   4
+		#define COST_J   0
 		{ COST_A, COST_B, COST_C, COST_D, COST_D, COST_C, COST_B, COST_A },
 		{ COST_B, COST_E, COST_F, COST_G, COST_G, COST_F, COST_E, COST_B },
 		{ COST_C, COST_F, COST_H, COST_I, COST_I, COST_H, COST_F, COST_C },

@@ -70,11 +70,6 @@ int main(int argc, char ** argv){
 	// [CODE_GEN]
 	//generateExpandTables();
 
-	//Heuristic_t HB, HW;
-	//HB.set()
-	//compete(HB, HW);
-	//return 0;
-
 	// Sanitize inputs and generate initial state
 	const char * argProgram = argv[0];
 	const char * argRunType = argv[1];
@@ -121,9 +116,8 @@ int main(int argc, char ** argv){
 		HB.set(HBCoinCount, HBFrontier, HBCloseness, HBBoard);
 		HW.set(HWCoinCount, HWFrontier, HWCloseness, HWBoard);
 
-		// Run competitions
-		int score = compete(HB, HW) - compete(HW, HB);
-		printf("%i\n", score);
+		// Run competition
+		printf("%i\n", compete(HB, HW));
 	
 	//      Parameter search		
 	} else if(strcmp(argRunType, "-search") == 0){
@@ -225,6 +219,7 @@ int main(int argc, char ** argv){
 
 		// Compute the next state using min-max
 		Heuristic_t H;
+		H.set(0.050000, 1.701470, 0.096491, 0.997022); // H8 value
 		reversi::Movement_t movement;
 		minmax::computeMinmax(startingState, H, &movement, myColor, oppColor);
 
