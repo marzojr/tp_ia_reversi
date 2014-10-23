@@ -1,3 +1,3 @@
 #!/bin/sh
-./deep-diver p
+./deep-diver -p
 

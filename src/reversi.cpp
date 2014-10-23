@@ -79,7 +79,10 @@ namespace reversi{
 
 	std::string State_t::toString() const{
 		std::stringstream ss;
+		ss << "yx01234567\n";
 		for (size_t i = 0; i < 8; i++){
+			char row = static_cast<char>(i) + '0';
+			ss << row << ' ';
 			for (size_t j = 0; j < 8; j++){
 				switch (board[i][j]){
 				case Occupancy_t::BLACK: ss << 'B'; break;

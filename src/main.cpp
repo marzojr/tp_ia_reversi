@@ -57,10 +57,68 @@ int compete(Heuristic_t &HB, Heuristic_t &HW){
 	else return count > 0 ? 1 : -1;
 }
 
+void playHuman() {
+	char c = 0;
+	do {
+		printf("\033\143Please type B to play as black or W to play as white: ");
+		if (!scanf("%c", &c)) continue;
+		c = toupper(c);
+	} while (c != 'W' && c != 'B');
+
+	reversi::State_t state("........\n........\n........\n...WB...\n...BW...\n........\n........\n........");
+	reversi::Occupancy_t humanColor = c == 'W' ? reversi::Occupancy_t::WHITE : reversi::Occupancy_t::BLACK;
+	reversi::Occupancy_t aiColor = reversi::oppositeColor(humanColor);
+	bool isHuman = c == 'B', blackIsHuman = isHuman;
+
+	reversi::Movement_t movement;
+	reversi::Movement_t movementW[64], movementB[64];
+	size_t movementBCnt, movementWCnt;
+	reversi::Movement_t (& humanMoves)[64] = blackIsHuman ? movementB : movementW;
+	size_t & movementHumanCnt = blackIsHuman ? movementBCnt : movementWCnt;
+
+	Heuristic_t H;
+	H.set(0.050000, 1.701470, 0.096491, 0.997022); // H8 value
+
+	for(;;){
+		printf("\033\143%s\n\n", state.toString().c_str());
+		state.expand(movementB, movementBCnt, movementW, movementWCnt);
+		if (movementBCnt == 0 && movementWCnt == 0) break;
+		else if (!isHuman) {
+			printf("Awaiting AI... ");
+			minmax::computeMinmax(&state, H, &movement, aiColor, humanColor);
+			if(movement.x != -1 && movement.y != -1) {
+				reversi::State_t newstate(&state, &movement, aiColor);
+				state = newstate;
+			}
+		} else {
+			if (movementHumanCnt != 0) {
+				printf("You can make the following movements (column, row):\n");
+				for (unsigned ii = 0; ii < movementHumanCnt; ii++){
+					printf("\t[%2u] %s\n", ii, humanMoves[ii].toString().c_str());
+				}
+				unsigned ii;
+				printf("\n");
+				do {
+					printf("\x1B[1APlease type the number of the movement you want to make: ");
+				} while (!scanf("%u", &ii) || ii >= movementHumanCnt);
+				reversi::State_t newstate(&state, &humanMoves[ii], humanColor);
+				state = newstate;
+			}
+		}
+		isHuman = !isHuman;
+	}
+
+	int count = state.score();
+	if(count == 0) printf("Game over: the game was tied!\n");
+	else printf("Game over: %s wins by %d pieces!\n", count > 0 ? "white" : "black", abs(count));
+
+}
+
 void printFormatAndExit(const char * program){
 	printf("(1) %s -f [fileName] [\"white\" | \"black\"] \n", program);
 	printf("(2) %s -s [board string] [\"white\" | \"black\"]\n", program);
 	printf("(3) %s -c [HB Coin Count] [HB Relative Frontier Size] [HB Closeness] [HB Board weight] [HW Coin Count] [HW Relative Frontier Size] [HW Closeness] [HW Board weight]\n", program);
+	printf("(3) %s -p\n", program);
 	printf("(4) %s -search [H Coin Count] [H Relative Frontier Size] [H Closeness] [H Board weight]\n", program);
 	exit(0);
 }
@@ -93,9 +151,11 @@ int main(int argc, char ** argv){
 	const char * argHFrontier = argv[expectedArgs2++];
 	const char * argHCloseness = argv[expectedArgs2++];
 	const char * argHBoard = argv[expectedArgs2++];	
+	//       Human interface mode
+	int expectedArgs3 = 2;
 	if (argc == 1) printFormatAndExit(argProgram);
-	else if (argc != expectedArgs0 && argc != expectedArgs1 && argc != expectedArgs2){
-		fprintf(stderr, "ERROR: Expected %i, %i, or %i arguments, got %i!\n", expectedArgs0, expectedArgs1, expectedArgs2, argc-1);
+	else if (argc != expectedArgs0 && argc != expectedArgs1 && argc != expectedArgs2 && argc != expectedArgs3){
+		fprintf(stderr, "ERROR: Expected %i, %i, %i, or %i arguments, got %i!\n", expectedArgs0, expectedArgs1, expectedArgs2, expectedArgs3, argc-1);
 		printFormatAndExit(argProgram);
 	
 	//      Competition run type
@@ -168,7 +228,9 @@ int main(int argc, char ** argv){
 		}
 		printf("# %f %f %f %f\n", HCoinCount, HFrontier, HCloseness, HBoard);
 
-
+	//      Human interface mode
+	} else if(strcmp(argRunType, "-p") == 0){
+		playHuman();
 
 	//      Single run type
 	} else {
