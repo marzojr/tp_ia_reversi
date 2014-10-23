@@ -281,7 +281,7 @@ int main(int argc, char ** argv){
 
 		// Compute the next state using min-max
 		Heuristic_t H;
-		H.set(0.050000, 1.701470, 0.096491, 0.997022); // H8 value
+		H.set(0.050000, 0.9, 0.43, 0.96); // H8 value
 		reversi::Movement_t movement;
 		minmax::computeMinmax(startingState, H, &movement, myColor, oppColor);
 
