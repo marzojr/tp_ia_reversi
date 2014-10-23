@@ -217,7 +217,7 @@ int main(int argc, char ** argv){
 			score = compete(HB, HW) - compete(HW, HB);
 			if(score <= 0) initialValue = selectedCandidate; 
 		};
-		for(size_t i = 0; i < 100; i++){
+		for(unsigned i = 0; i < 100; i++){
 			double oldHFrontier = HFrontier, oldHCloseness = HCloseness, oldHBoard = HBoard;
 			updateParam(HFrontier, setH1);
 			updateParam(HCloseness, setH2);
