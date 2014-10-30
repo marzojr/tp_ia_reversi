@@ -235,3 +235,12 @@ int reversi::State_t::score() const {
 	return total;
 }
 
+
+int reversi::State_t::countPieces() const {
+        int total = 0;
+        for (unsigned ii = 0; ii < 8; ii++)
+                for (unsigned jj = 0; jj < 8; jj++)
+                        if (board[ii][jj] != Occupancy_t::EMPTY) total++;
+        return total;
+}
+

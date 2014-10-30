@@ -28,9 +28,8 @@ namespace reversi{
 		Movement_t(boardCoord_t _x, boardCoord_t _y) : x(_x), y(_y) {}
 		Movement_t(const Movement_t & other) : x(other.x), y(other.y) {}
 		Movement_t & operator=(const Movement_t & rhs) {
-			if (this != &rhs){
-				x = rhs.x; y = rhs.y;
-			}
+			x = rhs.x;
+			y = rhs.y;
 			return *this;
 		}
 	};
@@ -49,6 +48,7 @@ namespace reversi{
 		void expand(Movement_t * actionsB, size_t &actionsBCnt, Movement_t * actionsW, size_t &actionsWCnt) const;
 		const Occupancy_t(*getBoard() const)[8][8];
 		int score() const;
+		int countPieces() const;
 	};
 }
 

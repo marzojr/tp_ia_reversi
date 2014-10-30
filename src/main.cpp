@@ -8,12 +8,15 @@
 #include "reversi.h"
 #include "minmax.h"
 #include "heuristic.h"
+#include "timer.h"
 
 // extern void generateExpandTables(void);
 
 // [DEBUG] Print out the possible movements for each player given the board
 void printDebug(reversi::State_t * state, reversi::Occupancy_t color){
 	
+	extern Timer_t minmax::timer;	
+
 	// Print out the board
 	printf("%s\n", state->toString().c_str());
 
@@ -25,6 +28,7 @@ void printDebug(reversi::State_t * state, reversi::Occupancy_t color){
 	for (size_t i = 0; i < movementWCnt; i++) printf("%s\n", movementW[i].toString().c_str());
 	printf("Black movements:\n");
 	for (size_t i = 0; i < movementBCnt; i++) printf("%s\n", movementB[i].toString().c_str());
+	printf("Time elapsed: %f\n", minmax::timer.getTime());
 	printf("Done printing configurations!\n");
 
 	// Print out the heuristic for the base state
@@ -42,7 +46,7 @@ int compete(Heuristic_t &HB, Heuristic_t &HW){
 	reversi::Movement_t movement;
 				
 	for(size_t i = 0; i < 60; i++){
-		//printf("(%i)", i); printDebug(&state, myColor);
+		printf("(%i)", i); printDebug(&state, myColor);
 		minmax::computeMinmax(&state, myColor == reversi::Occupancy_t::WHITE ? HW : HB, &movement, myColor, opColor);
 		if(movement.x != -1 && movement.y != -1) {
 			reversi::State_t newstate(&state, &movement, myColor);
@@ -281,7 +285,7 @@ int main(int argc, char ** argv){
 
 		// Compute the next state using min-max
 		Heuristic_t H;
-		H.set(0.050000, 0.9, 0.43, 0.96); // H8 value
+		H.set(0.050000, 1.701470, 0.096491, 0.997022); // H8 value
 		reversi::Movement_t movement;
 		minmax::computeMinmax(startingState, H, &movement, myColor, oppColor);
 

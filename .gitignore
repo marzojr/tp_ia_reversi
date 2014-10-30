@@ -29,3 +29,7 @@
 *.exe
 *.out
 *.app
+
+# Special files to ignore
+move.txt
+
