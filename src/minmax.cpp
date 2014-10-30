@@ -2,7 +2,6 @@
 #include "minmax.h"
 #include "heuristic.h"
 #include "opening.h"
-#include "timer.h"
 #include "utils.h"
 
 #ifndef INFINITY
