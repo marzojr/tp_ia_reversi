@@ -118,12 +118,74 @@ void playHuman() {
 
 }
 
+#define COMPETE_OTHULIO
+#ifdef COMPETE_OTHULIO
+
+#include "../othulio/othulio.h"
+#define OTHULIO_NO_MAIN
+
+int competeOthulio(Heuristic_t &H){
+	int score = 0;
+		
+	// Iterates over othulio starting and we starting
+	for(size_t start = 0; start <= 1; start++){
+	
+		reversi::State_t state("........\n........\n........\n...WB...\n...BW...\n........\n........\n........");
+		reversi::Occupancy_t myColor = reversi::Occupancy_t::BLACK;
+		reversi::Occupancy_t opColor = reversi::Occupancy_t::WHITE;
+		reversi::Movement_t movement;
+		
+		// Runs the round
+		for(size_t i = 0; i < 60; i++){
+		
+			// Our AI's turn to play
+			if(
+				(start == 0 && myColor == reversi::Occupancy_t::BLACK) || 
+				(start == 1 && myColor == reversi::Occupancy_t::WHITE)
+			){
+				minmax::computeMinmax(&state, H, &movement, myColor, opColor);
+			
+			// Othulio's turn
+			} else{
+				runOthulio(myColor, state.getBoard(), movement);
+			}
+		
+			// Apply state change
+			if(movement.x != -1 && movement.y != -1) {
+					reversi::State_t newstate(&state, &movement, myColor);
+					state = newstate;
+			}
+			myColor = reversi::oppositeColor(myColor);
+			opColor = reversi::oppositeColor(opColor);
+		}
+		
+		if(
+			(state.score() > 0 && start == 0) || 
+			(state.score() < 0 && start == 1)
+		){
+			score++;
+		} else if(
+			(state.score() < 0 && start == 0) || 
+			(state.score() > 0 && start == 1)
+		){
+			score--;
+		}
+	}
+	
+	return score;	
+}
+
+#endif
+
 void printFormatAndExit(const char * program){
 	printf("(1) %s -f [fileName] [\"white\" | \"black\"] \n", program);
 	printf("(2) %s -s [board string] [\"white\" | \"black\"]\n", program);
 	printf("(3) %s -c [HB Coin Count] [HB Relative Frontier Size] [HB Closeness] [HB Board weight] [HW Coin Count] [HW Relative Frontier Size] [HW Closeness] [HW Board weight]\n", program);
 	printf("(3) %s -p\n", program);
 	printf("(4) %s -search [H Coin Count] [H Relative Frontier Size] [H Closeness] [H Board weight]\n", program);
+	#ifdef COMPETE_OTHULIO
+	printf("(5) %s -defeat_othulio [H Coin Count] [H Relative Frontier Size] [H Closeness] [H Board weight]\n", program);
+	#endif
 	exit(0);
 }
 
@@ -236,6 +298,18 @@ int main(int argc, char ** argv){
 	} else if(strcmp(argRunType, "-p") == 0){
 		playHuman();
 
+	//      Compete against othulio
+	#ifdef COMPETE_OTHULIO
+	} else if(strcmp(argRunType, "-defeat_othulio") == 0){
+ 		double HCoinCount = atof(argHCoinCount);
+                double HFrontier = atof(argHFrontier);
+                double HCloseness = atof(argHCloseness);
+                double HBoard = atof(argHBoard);
+		Heuristic_t H; H.set(HCoinCount, HFrontier, HCloseness, HBoard);
+		int score = competeOthulio(H);
+		if(score == 2) printf("# %f %f %f %f\n", HCoinCount, HFrontier, HCloseness, HBoard);
+		else printf("%i %f %f %f %f\n", score, HCoinCount, HFrontier, HCloseness, HBoard);
+	#endif
 	//      Single run type
 	} else {
 		// Read the read type
