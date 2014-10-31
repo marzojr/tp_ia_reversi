@@ -30,6 +30,12 @@
 *.out
 *.app
 
+# Dependency files
+*.d
+
 # Special files to ignore
 move.txt
+tp_ia_reversi.zip
+deep-diver
+tablebuilder
 
