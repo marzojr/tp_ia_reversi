@@ -55,6 +55,7 @@ int compete(Heuristic_t &HB, Heuristic_t &HW){
 		opColor = reversi::oppositeColor(opColor);
 	}
 
+	printf("(60)"); printDebug(&state, myColor);
 	int count = state.score();
 	if(count == 0) return 0;
 	else return count > 0 ? 1 : -1;
@@ -80,7 +81,7 @@ void playHuman() {
 	size_t & movementHumanCnt = blackIsHuman ? movementBCnt : movementWCnt;
 
 	Heuristic_t H;
-	H.set(0.050000, 1.701470, 0.096491, 0.997022); // H8 value
+	H.set(0.05, 0.335284, 0.937433, 0.091163); // H8 value
 
 	for(;;){
 		printf("\033\143%s\n\n", state.toString().c_str());
@@ -284,7 +285,7 @@ int main(int argc, char ** argv){
 
 		// Compute the next state using min-max
 		Heuristic_t H;
-		H.set(0.050000, 1.701470, 0.096491, 0.997022); // H8 value
+		H.set(0.05, 0.335284, 0.937433, 0.091163); // H8 value
 		reversi::Movement_t movement;
 		minmax::computeMinmax(startingState, H, &movement, myColor, oppColor);
 

@@ -110,7 +110,7 @@ namespace minmax{
 		if (reversi::getOpening(base, movement)) return;
 		int currDepth = base->countPieces();		
 		int minmaxDepth = maxDepth;
-		if (currDepth > 51) minmaxDepth = 64;
+		if (currDepth > 50) minmaxDepth = 64 - currDepth;
 		computeMinmax<true, false>(base, H, minmaxDepth, -INFINITY, INFINITY, movement, myColor, oppColor);
 	}
 }
