@@ -23,7 +23,7 @@ DISTFILE := tp_ia_reversi
 
 # Documentação
 SRCDOCS := $(wildcard *.odt)
-EXTRADIST := compila.sh launch.sh othello.sh src/opening.dat src/expand.def
+EXTRADIST := compila.sh launch.sh othello.sh documentation.pdf src/opening.dat src/expand.def
 DOCS := $(SRCDOCS:%.odt=%.pdf)
 
 # Variáveis para compilação
